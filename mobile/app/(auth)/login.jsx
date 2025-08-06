@@ -9,7 +9,7 @@ export class login extends Component {
       <SafeAreaView className="bg-primary flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
           <View className="flex-1 justify-center">
-            <Form title="Login" message="Haven't got an account?" link="Register" route="\homepage"/>
+            <Form title="Login" message="Haven't got an account?" link="Register" route="/homepage"/>
           </View>
         </ScrollView>
       </SafeAreaView>

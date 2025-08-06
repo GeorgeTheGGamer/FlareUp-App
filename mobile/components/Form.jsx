@@ -15,7 +15,7 @@ const Form = ({ title, message, link, route }) => {
     useEffect(() => {
         if (submit === true) {
             setSubmit(false)
-            router.push({route})
+            router.push(route)
         }
     }, [submit])
 
@@ -63,7 +63,7 @@ const Form = ({ title, message, link, route }) => {
                 <CustomButton title="Submit" pressButton={() => { setSubmit(true) }} />
                 <View className="mt-4 flex-row items-center">
                     <Text className="text-lg font-lufga-regular">{message}</Text>
-                    <Link className="text-white italic font-lufga-regular text-lg" href={title == "Login" ? "/homepage" : "/login"}>{link}</Link>
+                    <Link className="text-white italic font-lufga-regular text-lg" href={title == "Login" ? "/register" : "/login"}>{link}</Link>
                 </View>
             </View>
         </View>

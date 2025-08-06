@@ -9,7 +9,7 @@ export class Register extends Component {
       <SafeAreaView className="bg-primary flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
           <View className="flex-1 justify-center">
-            <Form title="Register" message="Have an account?" link="Login" route="login"/>
+            <Form title="Register" message="Have an account?" link="Login" route="/login"/>
           </View>
         </ScrollView>
       </SafeAreaView>

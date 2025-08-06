@@ -6,10 +6,10 @@ import Form from '@/components/Form'
 export class login extends Component {
   render() {
     return (
-      <SafeAreaView className="bg-primary h-full">
-        <ScrollView>
-          <View>
-            <Form title="Login"/>
+      <SafeAreaView className="bg-primary flex-1">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
+          <View className="flex-1 justify-center">
+            <Form title="Login" message="Haven't got an account?" link="Register" route="\homepage"/>
           </View>
         </ScrollView>
       </SafeAreaView>

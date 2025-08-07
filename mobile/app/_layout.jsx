@@ -6,43 +6,51 @@ import { useEffect } from 'react'
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
-
+import { router } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync();  // Loading override
 
-// Stack determins the main screens
+// Stack determines the main screens
 const RootLayout = () => {
-
   const [fontsLoaded, error] = useFonts({
-  // Lufga fonts
-  "LufgaBlack": require("../assets/fonts/LufgaBlack.ttf"),
-  "LufgaBold": require("../assets/fonts/LufgaBold.ttf"),
-  "LufgaExtraBold": require("../assets/fonts/LufgaExtraBold.ttf"),
-  "LufgaExtraLight": require("../assets/fonts/LufgaExtraLight.ttf"),
-  "LufgaLight": require("../assets/fonts/LufgaLight.ttf"),
-  "LufgaMedium": require("../assets/fonts/LufgaMedium.ttf"),
-  "LufgaRegular": require("../assets/fonts/LufgaRegular.ttf"),
-  "LufgaSemiBold": require("../assets/fonts/LufgaSemiBold.ttf"),
-  "LufgaThin": require("../assets/fonts/LufgaThin.ttf"),
-  
-  // Luga fonts
-  "luga": require("../assets/fonts/luga.ttf"),
-  "luga_bold": require("../assets/fonts/luga_bold.ttf"),
-});
+    // Lufga fonts
+    "LufgaBlack": require("../assets/fonts/LufgaBlack.ttf"),
+    "LufgaBold": require("../assets/fonts/LufgaBold.ttf"),
+    "LufgaExtraBold": require("../assets/fonts/LufgaExtraBold.ttf"),
+    "LufgaExtraLight": require("../assets/fonts/LufgaExtraLight.ttf"),
+    "LufgaLight": require("../assets/fonts/LufgaLight.ttf"),
+    "LufgaMedium": require("../assets/fonts/LufgaMedium.ttf"),
+    "LufgaRegular": require("../assets/fonts/LufgaRegular.ttf"),
+    "LufgaSemiBold": require("../assets/fonts/LufgaSemiBold.ttf"),
+    "LufgaThin": require("../assets/fonts/LufgaThin.ttf"),
+    
+    // Luga fonts
+    "luga": require("../assets/fonts/luga.ttf"),
+    "luga_bold": require("../assets/fonts/luga_bold.ttf"),
+  });
 
-useEffect(() => {
-    if(error) throw error;
-    if(fontsLoaded) SplashScreen.hideAsync();
+  useEffect(() => {
+    if (error) throw error;
+    
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+      
+      // Navigate AFTER fonts are loaded and layout is ready
+      if (__DEV__) {
+        setTimeout(() => {
+          router.push("/(tabs)/detection");
+        }, 100); // Small delay to ensure layout is mounted
+      }
+    }
   }, [fontsLoaded, error]);
 
   if (!fontsLoaded && !error) {
     return null;
   }
 
-
   return (
     <Stack>
-      <Stack.Screen name='index' options={{headerShown : false}}/>
+      <Stack.Screen name='index' options={{headerShown: false}}/>
       <Stack.Screen name='(auth)' options={{headerShown: false}} />
       <Stack.Screen name='(tabs)' options={{headerShown: false}} />
       <StatusBar style='light'/>

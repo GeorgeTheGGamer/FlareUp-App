@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import CustomButton from '@/components/CustomButton'
 import loadModel from '@/skinDetection'
+import processImage from '@/imageProcessing'
 
 const detection = () => {
   const [image, setImage] = useState(null)
@@ -50,6 +51,10 @@ const detection = () => {
 
       // Add in model logic
       const model = loadModel()
+      console.log("hello model loaded", model)
+      const processedImage = processImage(image)
+      console.log("hello image processed", processImage)
+
       
     }
     

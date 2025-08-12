@@ -42,6 +42,7 @@ const detection = () => {
   // Choose a Different Image
   const clearImage = () => {
     setImage(null)
+    setImagePredictions([])
   }
 
 

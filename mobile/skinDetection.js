@@ -5,7 +5,9 @@ import { bundleResourceIO } from '@tensorflow/tfjs-react-native'
 
 let cachedModel = null
 
+
 const loadModel = async () => {
+  await tf.ready()
   if (cachedModel) {
     return cachedModel
   }
@@ -17,18 +19,13 @@ const loadModel = async () => {
     const modelUrl = bundleResourceIO(
       require('./assets/models/model.json'),
       [
-        require('./assets/models/group1-shard1of12.bin'),
-        require('./assets/models/group1-shard2of12.bin'),
-        require('./assets/models/group1-shard3of12.bin'),
-        require('./assets/models/group1-shard4of12.bin'),
-        require('./assets/models/group1-shard5of12.bin'),
-        require('./assets/models/group1-shard6of12.bin'),
-        require('./assets/models/group1-shard7of12.bin'),
-        require('./assets/models/group1-shard8of12.bin'),
-        require('./assets/models/group1-shard9of12.bin'),
-        require('./assets/models/group1-shard10of12.bin'),
-        require('./assets/models/group1-shard11of12.bin'),
-        require('./assets/models/group1-shard12of12.bin')
+        require('./assets/models/group1-shard1of7.bin'),
+        require('./assets/models/group1-shard2of7.bin'),
+        require('./assets/models/group1-shard3of7.bin'),
+        require('./assets/models/group1-shard4of7.bin'),
+        require('./assets/models/group1-shard5of7.bin'),
+        require('./assets/models/group1-shard6of7.bin'),
+        require('./assets/models/group1-shard7of7.bin')
       ]
     );
 

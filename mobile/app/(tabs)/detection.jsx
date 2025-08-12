@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import CustomButton from '@/components/CustomButton'
-import loadModel from '@/skinDetection'
+import makePrediction from '@/skinDetection'
 import processImage from '@/imageProcessing'
 
 const detection = () => {
   const [image, setImage] = useState(null)
   const [submittedImage, setsubmittedImage] = useState(false)
+  const [imagePredictions, setImagePredictions] = useState([])
 
   // Pick Images from camera roll
   const pickImage = async () => {
@@ -38,27 +39,32 @@ const detection = () => {
   }
   
 
+  // Choose a Different Image
   const clearImage = () => {
     setImage(null)
   }
 
 
   useEffect(() => {
+  const handleImageSubmission = async () => {
     if (submittedImage == true) {
+      try {
+        // Add In API Logic
+        const processedImage = await processImage(image)
+        console.log("hello image processed", processedImage.shape)
 
-      // Add In API Logic
-
-
-      // Add in model logic
-      const model = loadModel()
-      console.log("hello model loaded", model)
-      const processedImage = processImage(image)
-      console.log("hello image processed", processImage)
-
-      
+        const prediction = await makePrediction(processedImage)
+        console.log("Image has been Predicted")
+        setImagePredictions(Array.from(prediction))
+        console.log(Array.from(prediction))
+      } catch (error) {
+        console.error("Error processing image:", error)
+      }
     }
-    
-  }, [submittedImage])
+  }
+
+  handleImageSubmission() // Call the async function
+}, [submittedImage])
   
 
   return (

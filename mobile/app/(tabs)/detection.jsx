@@ -45,11 +45,11 @@ const detection = () => {
   }
 
 
+  // Process and Predict Image Class
   useEffect(() => {
   const handleImageSubmission = async () => {
     if (submittedImage == true) {
       try {
-        // Add In API Logic
         const processedImage = await processImage(image)
         console.log("hello image processed", processedImage.shape)
 
@@ -64,6 +64,7 @@ const detection = () => {
   }
 
   handleImageSubmission() // Call the async function
+  setsubmittedImage(false)
 }, [submittedImage])
   
 

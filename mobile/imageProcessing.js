@@ -26,17 +26,26 @@ const processImage = async (imageUri) => {
         const resized = tf.image.resizeBilinear(imageTensor, [300, 300])
         console.log('Resized image shape:', resized.shape)
 
-        // Normalize pixel from 0-255 to 0-1
-        const normalized = resized.div(255.0)
+        // EfficientNet Format
+        const float32Image = resized.toFloat()
+        const normalized = float32Image.div(255.0)
+        const mean = tf.tensor([0.485, 0.456, 0.406])
+        const std = tf.tensor([0.229, 0.224, 0.225])
+        
+        const preprocessed = normalized.sub(mean).div(std)
 
         // Add batch dimension
-        const batched = normalized.expandDims(0)
+        const batched = preprocessed.expandDims(0)
         console.log('Final tensor shape:', batched.shape)
 
         // Clean up intermediate tensors
         imageTensor.dispose()
         resized.dispose()
+        float32Image.dispose()
         normalized.dispose()
+        preprocessed.dispose()
+        mean.dispose()
+        std.dispose()
 
         return batched;
         

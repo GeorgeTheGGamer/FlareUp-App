@@ -22,8 +22,8 @@ const processImage = async (imageUri) => {
         const imageTensor = decodeJpeg(new Uint8Array(imageData), 3)
         console.log('Original image shape:', imageTensor.shape)
 
-        // Resize to 300 by 300
-        const resized = tf.image.resizeBilinear(imageTensor, [300, 300])
+        // Resize to 240 by 240
+        const resized = tf.image.resizeBilinear(imageTensor, [240, 240])
         console.log('Resized image shape:', resized.shape)
 
         // EfficientNet Format

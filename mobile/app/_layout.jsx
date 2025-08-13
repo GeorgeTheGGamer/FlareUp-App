@@ -38,7 +38,7 @@ const RootLayout = () => {
       // Navigate AFTER fonts are loaded and layout is ready
       if (__DEV__) {
         setTimeout(() => {
-          router.push("/(tabs)/detection");
+          router.push("/(tabs)/homepage");
         }, 100); // Small delay to ensure layout is mounted
       }
     }

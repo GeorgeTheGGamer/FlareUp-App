@@ -20,6 +20,7 @@
     "@tensorflow/tfjs-backend-cpu": "^4.22.0",
     "@tensorflow/tfjs-core": "^4.22.0",
     "@tensorflow/tfjs-react-native": "^1.0.0",
+    "axios": "^1.11.0",
     "expo": "~53.0.20",
     "expo-blur": "~14.1.5",
     "expo-camera": "~16.1.11",
@@ -50,7 +51,8 @@
     "react-native-vector-icons": "^10.3.0",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

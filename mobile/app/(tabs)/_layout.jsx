@@ -2,10 +2,14 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 const TabsLayout = () => {
   return (
-    <Tabs screenOptions={{
+
+    // Can Only Access these Tabs when Authenticated
+    <ProtectedRoute>
+      <Tabs screenOptions={{
       headerShown: false, 
       tabBarActiveTintColor: 'white', 
       tabBarInactiveTintColor: 'gray', 
@@ -37,6 +41,8 @@ const TabsLayout = () => {
         name='detection'
       />
     </Tabs>
+    </ProtectedRoute>
+    
   )
 }
 

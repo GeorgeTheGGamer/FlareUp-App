@@ -1,6 +1,6 @@
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { ACCESS_TOKEN } from "./constants"
+import { ACCESS_TOKEN } from "./tokenConstants"
 
 // Store token in memory for synchronous access
 let currentToken = null

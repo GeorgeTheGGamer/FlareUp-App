@@ -1,6 +1,6 @@
 import {jwtDecode} from "jwt-decode"
 import api from "../api"
-import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants'
+import { REFRESH_TOKEN, ACCESS_TOKEN } from '../tokenConstants'
 import { useState, useEffect } from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { router } from "expo-router"

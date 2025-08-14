@@ -1,9 +1,9 @@
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView, Text, View, Image } from 'react-native'
-import { icons } from '../constants'
 import CustomButton from '@/components/CustomButton'
 import { router } from 'expo-router'
+import { icons } from '../constants'
 
 
 const index = () => {
@@ -35,5 +35,4 @@ const index = () => {
     </SafeAreaView>
   )
 }
-
 export default index

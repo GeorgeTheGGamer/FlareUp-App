@@ -110,10 +110,10 @@ export default Form
 
 
 //Todo 
-//* Finish Login and Register Authentication
-//* Use NHS API In the backend
+// Finish Login and Register Authentication
+// Use NHS API In the backend
+// Display the Users name for the Welcome
 //* Save the Users Detection Data in the Backend
-//! Remeber to make migrations 
 //* Save the Users Taken Image in the Backend
 //* New Tab where you can view Previous Scans and output the Data with the Image
 //* Then Finally Have the model in the Backend API
@@ -121,5 +121,4 @@ export default Form
 //* Make the Database a postgres 
 
 //! Finished
-
 //! Do a leetcode for the fun of the game

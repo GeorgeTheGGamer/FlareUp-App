@@ -4,13 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useDebounce } from 'use-debounce'
+import { ACCESS_TOKEN } from '@/tokenConstants'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // Utilise the NHS Website Content API v2
 // Currently Using the Sandbox since this is a development build 
 // But Can Easily upgrade for production ready 
 
 
-const BASEURL = process.env.EXPO_PUBLIC_SKINCONDITION_API_KEY
+const BASEURL = process.env.EXPO_PUBLIC_API_URL
 
 const homepage = () => {
 
@@ -18,6 +20,7 @@ const homepage = () => {
   const [skinData, setSkinData] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [username, setUsername] = useState("")
 
   // Delay the inputted skin condition for reduced API calls 
   const [debouncedSearchTerm] = useDebounce(skinCondition, 1000)
@@ -36,19 +39,47 @@ const homepage = () => {
     
   )
 
-  
+
+  const retrieveUsername = async () => {
+    try {
+
+      const token = await AsyncStorage.getItem(ACCESS_TOKEN)
+
+      const response = await axios.get(`${BASEURL}/api/user/details/`, {
+        headers : {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      setUsername(response.data.username)
+
+      
+    } catch (error) {
+      
+    }
+  }
 
   const retrieveApiInfo = async () => {
     try {
       setLoading(true)
       setError(null)
 
+      // Get Access Token stored in Async Storge
+      const token = await AsyncStorage.getItem(ACCESS_TOKEN)
+
       // Format the search term (lowercase, replace spaces with hyphens)
       const formattedTerm = debouncedSearchTerm.toLowerCase().trim().replace(/\s+/g, '-')
 
-      const response = await axios.get(`${BASEURL}/conditions/${formattedTerm}`)
+      // Now call the Django API Endpoint
+      const response = await axios.get(`${BASEURL}/api/nhs-data/${formattedTerm}/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
       console.log("request sent to the NHS API")
-      setSkinData(response.data)
+      setSkinData(response.data.nhs_data)
 
     } catch (error) {
       setError(error)
@@ -57,6 +88,13 @@ const homepage = () => {
       setLoading(false)
     }
   }
+
+  // Retrieve the Users Username on page start up
+  useEffect(() => {
+    retrieveUsername()
+    
+  }, [])
+  
 
   // Call the Api Once the skincondition changes and is not empty
   useEffect(() => {
@@ -84,7 +122,7 @@ const homepage = () => {
           {/* Header */}
           <View className="mb-8">
             <Text className="text-white mt-5 text-4xl font-lufga-bold text-center">
-              Welcome <Text className="text-flare">User</Text>
+              Welcome <Text className="text-flare">{username}</Text>
             </Text>
             <Text className="text-white text-xl font-lufga-semibold text-center mt-5">
               Learn more about your Skin Condition... 🤔
@@ -116,7 +154,7 @@ const homepage = () => {
                 <ActivityIndicator size="large" color="#0000ff" />
               ) : error ? (
                 <Text>{error.message}</Text>
-              ) : skinData.name ? (
+              ) : skinData && skinData.name ? (
                 <View className="p-4">
                   {/* Title row with NHS attribution */}
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>

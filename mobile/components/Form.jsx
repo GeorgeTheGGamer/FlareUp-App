@@ -4,21 +4,49 @@ import React from 'react'
 import CustomButton from './CustomButton'
 import { router } from 'expo-router'
 import { Link } from 'expo-router'
+import api from '@/api'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/tokenConstants'
 
+const Form = ({ title, message, link, route, apiRoute}) => {
 
-const Form = ({ title, message, link, route }) => {
-
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
+    const [Username, setUsername] = useState("")
+    const [Password, setPassword] = useState("")
     const [submit, setSubmit] = useState(false)
 
     useEffect(() => {
         if (submit === true) {
             setSubmit(false)
-            router.push(route)
+            handleSubmit()
         }
     }, [submit])
 
+
+
+    const handleSubmit = async () => {
+
+
+        try {
+            // Post User Information to the backend API
+            const response = await api.post(apiRoute, {
+                username: Username,
+                password: Password
+            })
+
+            if (title === "Login") {
+                await AsyncStorage.setItem(ACCESS_TOKEN, response.data.access)
+                await AsyncStorage.setItem(REFRESH_TOKEN, response.data.refresh)
+                // Encaptualted by a Protected Route
+                router.push(route)          // If Login then go to the homepage
+            } else {
+                router.push(route)          // If Register then go to the login page
+            }
+      
+        } catch (error) {
+            alert("Login failed: " + error.message)
+            
+        }
+    }
 
     return (
         <View className="px-5"> 
@@ -35,7 +63,7 @@ const Form = ({ title, message, link, route }) => {
                         autoCorrect={false}
                         className="flex-1 text-gray-900 font-lufga-semibold text-base"
                         onChangeText={(text) => setUsername(text)}
-                        value={username}
+                        value={Username}
                     />
                 </View>
             </View>
@@ -53,7 +81,7 @@ const Form = ({ title, message, link, route }) => {
                         secureTextEntry={true}
                         className="flex-1 text-gray-900 font-lufga-semibold text-base"
                         onChangeText={(text) => setPassword(text)}
-                        value={password}
+                        value={Password}
                     />
                 </View>
             </View>
@@ -72,3 +100,26 @@ const Form = ({ title, message, link, route }) => {
 }
 
 export default Form
+
+
+
+
+
+
+
+
+
+//Todo 
+//* Finish Login and Register Authentication
+//* Use NHS API In the backend
+//* Save the Users Detection Data in the Backend
+//! Remeber to make migrations 
+//* Save the Users Taken Image in the Backend
+//* New Tab where you can view Previous Scans and output the Data with the Image
+//* Then Finally Have the model in the Backend API
+//* Fix the Model
+//* Make the Database a postgres 
+
+//! Finished
+
+//! Do a leetcode for the fun of the game

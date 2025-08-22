@@ -11,6 +11,10 @@ const detection = () => {
   const [image, setImage] = useState(null)
   const [submittedImage, setsubmittedImage] = useState(false)
   const [imagePredictions, setImagePredictions] = useState([])
+  const [skinData, setSkinData] = useState({})
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [saveNote, setSaveNote] = useState(false)
 
   // Pick Images from camera roll
   const pickImage = async () => {
@@ -26,6 +30,7 @@ const detection = () => {
     }
   }
 
+  // Take image with camera
   const takePhoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
@@ -46,6 +51,30 @@ const detection = () => {
   }
 
 
+  // Take the Top 3 Predictions
+  const topThreePredictions = (predicitions, classes) => {
+
+    // Index the probabilites
+    const indexedPredictions = predicitions.map((prob, index) => ({
+      index: index,
+      probability: prob,
+      class: classes[index]
+    }))
+
+    // Sort for the top 3
+    const top3 = indexedPredictions
+                  .sort((a,b) => b.probability - a.probability)
+                  .slice(0,3)
+
+
+    console.log("Retrieved the Top 3")
+    return top3
+
+  }
+
+
+
+
   // Process and Predict Image Class
   useEffect(() => {
   const handleImageSubmission = async () => {
@@ -56,15 +85,33 @@ const detection = () => {
 
         const prediction = await makePrediction(processedImage)
         console.log("Image has been Predicted")
-        setImagePredictions(Array.from(prediction))
-        console.log(Array.from(prediction))
+        
+        const predictionArray = Array.from(prediction)
+        setImagePredictions(predictionArray)
+        console.log(predictionArray)
+
+        // Use predictionArray directly, not imagePredictions state
+        const skin_classes = ["Acne", "Actinic_Keratosis", "Benign_tumors", "Bullous", "Candidiasis", "DrugEruption", "Eczema", "Infestations_Bites", "Lichen", "Lupus", "Moles", "Psoriasis", "Rosacea", "Seborrh_Keratoses", "SkinCancer", "Sun_Sunlight_Damage", "Tinea", "Unknown_Normal", "Vascular_Tumors", "Vasculitis", "Vitiligo", "Warts"];
+
+        const top3 = topThreePredictions(predictionArray, skin_classes)
+
+        const skinDataObject = {
+          predictions: top3.map(pred => ({
+            class: pred.class,
+            probability: pred.probability
+          }))
+        }
+        
+        setSkinData(skinDataObject)
+        console.log("Top 3 predictions completed", skinDataObject)
+        
       } catch (error) {
         console.error("Error processing image:", error)
       }
     }
   }
 
-  handleImageSubmission() // Call the async function
+  handleImageSubmission()
   setsubmittedImage(false)
 }, [submittedImage])
   
@@ -89,6 +136,8 @@ const detection = () => {
             )}
           </View>
 
+          
+
 
           {/* Submit/Clear buttons - only show when image exists */}
           {image ? (
@@ -111,4 +160,7 @@ const detection = () => {
   )
 }
 
+//TODO While image is processing have a loading Screen.
+//TODO THen take to another Screen where you can either save the note or go back?
+//TODO THis Handles the Call to the Backend API. Send Through the Image and Skin Data Object and handle the Title, Description and Authentication Seperately
 export default detection

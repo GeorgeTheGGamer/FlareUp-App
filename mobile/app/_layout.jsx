@@ -1,3 +1,4 @@
+import { View, Text } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 import "../global.css"
@@ -5,6 +6,7 @@ import { useEffect } from 'react'
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
+import { router } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync();  // Loading override
 
@@ -32,6 +34,13 @@ const RootLayout = () => {
     
     if (fontsLoaded) {
       SplashScreen.hideAsync();
+      
+      // Navigate AFTER fonts are loaded and layout is ready
+      if (__DEV__) {
+        setTimeout(() => {
+          router.push("/(tabs)/notes");
+        }, 100); // Small delay to ensure layout is mounted
+      }
     }
   }, [fontsLoaded, error]);
 

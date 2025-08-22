@@ -40,6 +40,18 @@ const TabsLayout = () => {
         }}
         name='detection'
       />
+
+      <Tabs.Screen 
+        options={{
+          title: "Tracker",
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialIcons name="analytics" size={size} color={color} />
+          ),
+        }}
+        name='notes'
+      />
+
+
     </Tabs>
     </ProtectedRoute>
     

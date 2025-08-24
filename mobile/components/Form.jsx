@@ -115,7 +115,7 @@ export default Form
 // Display the Users name for the Welcome
 // Save the Users Detection Data in the Backend
 // Save the Users Taken Image in the Backend
-//* New Tab where you can view Previous Scans and output the Data with the Image
+// New Tab where you can view Previous Scans and output the Data with the Image
 //* Then Finally Have the model in the Backend API
 //* Fix the Model
 //* Make the Database a postgres 

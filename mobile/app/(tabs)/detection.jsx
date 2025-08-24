@@ -1,20 +1,66 @@
-import { View, Text, ScrollView, Button, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ScrollView, Button, TouchableOpacity, Image, ActivityIndicator, TextInput } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import CustomButton from '@/components/CustomButton'
-import makePrediction from '@/skinDetection'
-import processImage from '@/imageProcessing'
+import SaveNote from '@/components/SaveNote'
+import LoadingScreen from '@/components/LoadingScreen'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ACCESS_TOKEN } from '@/tokenConstants'
+
+
+const BASEURL = process.env.EXPO_PUBLIC_API_URL
+
 
 const detection = () => {
   const [image, setImage] = useState(null)
   const [submittedImage, setsubmittedImage] = useState(false)
   const [imagePredictions, setImagePredictions] = useState([])
   const [skinData, setSkinData] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [showResults, setShowResults] = useState(false) 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [saveNote, setSaveNote] = useState(false)
+
+  // API call to get predictions from Django backend
+  const getPredictionsFromAPI = async (imageUri) => {
+    try {
+      const token = await AsyncStorage.getItem(ACCESS_TOKEN)
+      
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      // Create FormData to send image file
+      const formData = new FormData()
+      formData.append('image', {
+        uri: imageUri,
+        type: 'image/jpeg', // or 'image/png' depending on your image
+        name: 'image.jpg',
+      })
+
+      const response = await axios.post(`${BASEURL}/api/classify-skin-condition/`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000, // 30 second timeout for model inference
+      })
+
+      console.log("Successfully predicted from API", response.data.probabilities)
+      return response.data.probabilities
+      
+    } catch (error) {
+      console.error("Error getting AI predictions:", error)
+      if (error.response) {
+        console.error("Response data:", error.response.data)
+        console.error("Response status:", error.response.status)
+      }
+      throw error
+    }
+  }
 
   // Pick Images from camera roll
   const pickImage = async () => {
@@ -43,19 +89,20 @@ const detection = () => {
     }
   }
   
-
   // Choose a Different Image
   const clearImage = () => {
     setImage(null)
     setImagePredictions([])
+    setSkinData({})
+    setShowResults(false)
+    setTitle("")
+    setDescription("")
   }
 
-
   // Take the Top 3 Predictions
-  const topThreePredictions = (predicitions, classes) => {
-
-    // Index the probabilites
-    const indexedPredictions = predicitions.map((prob, index) => ({
+  const topThreePredictions = (predictions, classes) => {
+    // Index the probabilities
+    const indexedPredictions = predictions.map((prob, index) => ({
       index: index,
       probability: prob,
       class: classes[index]
@@ -66,63 +113,97 @@ const detection = () => {
                   .sort((a,b) => b.probability - a.probability)
                   .slice(0,3)
 
-
     console.log("Retrieved the Top 3")
     return top3
-
   }
 
-
-
-
-  // Process and Predict Image Class
+  // Handle image submission and API call
   useEffect(() => {
-  const handleImageSubmission = async () => {
-    if (submittedImage == true) {
-      try {
-        const processedImage = await processImage(image)
-        console.log("hello image processed", processedImage.shape)
+    const handleImageSubmission = async () => {
+      if (submittedImage == true) {
+        setIsLoading(true)
+        try {
+          // Call Django API instead of local processing
+          const predictionArray = await getPredictionsFromAPI(image)
+          
+          setImagePredictions(predictionArray)
+          console.log("Predictions from API:", predictionArray)
 
-        const prediction = await makePrediction(processedImage)
-        console.log("Image has been Predicted")
-        
-        const predictionArray = Array.from(prediction)
-        setImagePredictions(predictionArray)
-        console.log(predictionArray)
+          // Same class labels as your Django API
+          const skin_classes = [
+            "Acne", "Actinic_Keratosis", "Benign_tumors", "Bullous", 
+            "Candidiasis", "DrugEruption", "Eczema", "Infestations_Bites", 
+            "Lichen", "Lupus", "Moles", "Psoriasis", "Rosacea", 
+            "Seborrh_Keratoses", "SkinCancer", "Sun_Sunlight_Damage", 
+            "Tinea", "Unknown_Normal", "Vascular_Tumors", "Vasculitis", 
+            "Vitiligo", "Warts"
+          ];
 
-        // Use predictionArray directly, not imagePredictions state
-        const skin_classes = ["Acne", "Actinic_Keratosis", "Benign_tumors", "Bullous", "Candidiasis", "DrugEruption", "Eczema", "Infestations_Bites", "Lichen", "Lupus", "Moles", "Psoriasis", "Rosacea", "Seborrh_Keratoses", "SkinCancer", "Sun_Sunlight_Damage", "Tinea", "Unknown_Normal", "Vascular_Tumors", "Vasculitis", "Vitiligo", "Warts"];
+          const top3 = topThreePredictions(predictionArray, skin_classes)
 
-        const top3 = topThreePredictions(predictionArray, skin_classes)
-
-        const skinDataObject = {
-          predictions: top3.map(pred => ({
-            class: pred.class,
-            probability: pred.probability
-          }))
+          const skinDataObject = {
+            predictions: top3.map(pred => ({
+              class: pred.class,
+              probability: pred.probability
+            }))
+          }
+          
+          setSkinData(skinDataObject)
+          console.log("Top 3 predictions completed", skinDataObject)
+          setShowResults(true)
+          
+        } catch (error) {
+          console.error("Error processing image:", error)
+          // Show user-friendly error message
+          alert("Failed to analyze image. Please try again or check your connection.")
+        } finally {
+          setIsLoading(false)
         }
-        
-        setSkinData(skinDataObject)
-        console.log("Top 3 predictions completed", skinDataObject)
-        
-      } catch (error) {
-        console.error("Error processing image:", error)
       }
     }
+
+    handleImageSubmission()
+    setsubmittedImage(false)
+  }, [submittedImage])
+
+  // Show results screen after processing
+  if (showResults && skinData.predictions) {
+    return (
+      <SafeAreaView className="bg-primary flex-1">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <SaveNote 
+            skinData={skinData} 
+            imagePredictions={imagePredictions} 
+            title={title} 
+            setTitle={setTitle} 
+            description={description} 
+            setDescription={setDescription} 
+            image={image} 
+            setShowResults={setShowResults} 
+            clearImage={clearImage}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    )
   }
 
-  handleImageSubmission()
-  setsubmittedImage(false)
-}, [submittedImage])
+  if (isLoading) {
+    return (
+      <SafeAreaView className="bg-primary flex-1">
+        <LoadingScreen />
+      </SafeAreaView>
+    )
+  }
   
-
   return (
     <SafeAreaView className="bg-primary flex-1">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-white text-4xl font-lufga-extrabold">AI Skin Detection</Text>
+        {/* Title at top of page */}
+        <View className="pt-4 pb-6">
+          <Text className="text-white text-4xl font-lufga-extrabold text-center">AI Skin Detection</Text>
         </View>
 
+        {/* Main content area */}
         <View className="flex-1 justify-center items-center">
           <View className="w-[375px] h-[400px] bg-white m-5 rounded-2xl justify-center items-center">
             {image ? (
@@ -135,9 +216,6 @@ const detection = () => {
               <Text className="text-gray-900 font-lufga-semibold">Take a Picture 😊</Text>
             )}
           </View>
-
-          
-
 
           {/* Submit/Clear buttons - only show when image exists */}
           {image ? (
@@ -160,7 +238,4 @@ const detection = () => {
   )
 }
 
-//TODO While image is processing have a loading Screen.
-//TODO THen take to another Screen where you can either save the note or go back?
-//TODO THis Handles the Call to the Backend API. Send Through the Image and Skin Data Object and handle the Title, Description and Authentication Seperately
 export default detection

@@ -35,12 +35,6 @@ const RootLayout = () => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
       
-      // Navigate AFTER fonts are loaded and layout is ready
-      if (__DEV__) {
-        setTimeout(() => {
-          router.push("/(tabs)/notes");
-        }, 100); // Small delay to ensure layout is mounted
-      }
     }
   }, [fontsLoaded, error]);
 

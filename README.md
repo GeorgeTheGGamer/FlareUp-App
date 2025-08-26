@@ -9,8 +9,44 @@
 [![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org/)
 
 ## 📱 Screenshots
+- All pages have a scrollable View with a safe area contecxt to fit any mobile screen whether that be IOS or Android
 
-*[Screenshots will be added to the repository root]*
+### Start Page
+- Flare Up app start page with a list of all skin conditions the AI Model can predict and two options to either login or register
+![Alt text](./readmeimages/startscreen.png)
+
+### Login and Register Page
+- Enter both the Username and Password. Utilises JWT Tokens and all other pages and External API calls and use of the AI Model can only be used with an access token.
+- Through the Django REST API access and refresh tokens are retrieved on registration and login. Both have an expiration Duration
+![Alt text](./readmeimages/register.png)
+![Alt text](./readmeimages/login.png)
+
+## Tab Pages
+- Must have authentication to access the tabs pages
+### Homepage
+- The homepage contains a search screen to find out information on any skin condition. Utilises Debouncing to limit API Calls and utilises Django backend to call the external API and caching results to also limit external api calls to the NHS API.
+- Utilising the Django REST API to make calls to the external NHS API through servicing.
+![Alt text](./readmeimages/nhsempty.png)
+![Alt text](./readmeimages/nhsresult.png)
+
+### AI Model Page
+- Base page with options to take photo using the phones camera or choose a photo from cameraroll
+- Once image chosen two options to retake got back or submit 
+- Once submitted loading screen which takes you to the results page and option to save as a note to track
+- Through the Django Rest API, the preproccing of images utilising tensorflow tensors and EfficientNets preproccessing is done through the backend and with the power of tensorflow lite for seamless and fast AI Model integration and accurate Results.
+![Alt text](./readmeimages/aimodelempty.png)
+![Alt text](./readmeimages/aimodelimage.png)
+![Alt text](./readmeimages/choosepic.png)
+![Alt text](./readmeimages/noteresults.png)
+
+### Notes Page
+- This is where the User can track results over time with the option to delete note also
+- Displays the results, image, title, description and date the note was made 
+- Notes ordered by date of creation 
+- Scrollable View thus can have as many Notes as you want
+- Every Note is stored in the Django REST API for specific Users.
+![Alt text](./readmeimages/noteempty.png)
+![Alt text](./readmeimages/notefull.png)
 
 ---
 
@@ -286,10 +322,10 @@ FlareUp-App/
 ```bash
 # Backend development with Conda
 conda activate flareup
-python manage.py runserver --settings=backend.settings.development
+python manage.py runserver 
 
 # Frontend development with Expo
-npx expo start
+npx expo start -c
 # Scan QR code or use simulators/emulators
 
 # Database operations
@@ -346,46 +382,3 @@ python -m pytest tests/ml/
 - **Augmentation**: Advanced image preprocessing and augmentation pipeline
 - **Validation**: Stratified k-fold cross-validation
 
----
-
-## 🏆 Achievements & Recognition
-
-- **🥇 Healthcare Innovation**: Recognized for advancing digital health solutions
-- **🔬 Medical Accuracy**: Validated by dermatology professionals
-- **💡 Technical Excellence**: Advanced implementation of mobile ML
-- **🌟 User Experience**: Intuitive design praised by beta testers
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **NHS Digital** for providing comprehensive medical information APIs
-- **TensorFlow Team** for machine learning framework and optimization tools
-- **React Native Community** for mobile development platform
-- **Medical Advisors** for clinical validation and guidance
-
----
-
-## 📞 Contact & Support
-
-**Developer**: GeorgeTheGGamer  
-**GitHub**: [@GeorgeTheGGamer](https://github.com/GeorgeTheGGamer)  
-**Project Link**: [https://github.com/GeorgeTheGGamer/FlareUp-App](https://github.com/GeorgeTheGGamer/FlareUp-App)
-
----
-
-<div align="center">
-
-### 🔥 Made with ❤️ for better skin health
-
-*FlareUp - Empowering users with AI-driven skin condition insights*
-
-![Visitors](https://visitor-badge.glitch.me/badge?page_id=georgethegamer.flareup-app)
-
-</div>
